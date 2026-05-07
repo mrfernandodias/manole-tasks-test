@@ -3,6 +3,7 @@ import cors from "cors";
 import "./database/db.js";
 
 import authRouter from "./routes/auth.routes.js";
+import { authenticate } from "./middlewares/auth.middleware.js";
 
 const app = express();
 
@@ -18,6 +19,10 @@ app.use(express.json());
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
+});
+
+app.get("/me", authenticate, (req, res) => {
+  res.json({ user: req.user });
 });
 
 app.use("/auth", authRouter);
