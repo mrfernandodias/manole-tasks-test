@@ -7,10 +7,24 @@
     "test": "tests"
   },
   "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "generate:secret": "node -e \"console.log(require('node:crypto').randomBytes(64).toString('hex'))\"",
     "test": "node --test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^12.9.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
 }
