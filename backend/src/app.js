@@ -3,6 +3,7 @@ import cors from "cors";
 import "./database/db.js";
 
 import authRouter from "./routes/auth.routes.js";
+import tasksRouter from "./routes/tasks.routes.js";
 import { authenticate } from "./middlewares/auth.middleware.js";
 
 const app = express();
@@ -26,5 +27,6 @@ app.get("/me", authenticate, (req, res) => {
 });
 
 app.use("/auth", authRouter);
+app.use("/tasks", tasksRouter);
 
 export default app;
