@@ -39,6 +39,22 @@ function normalizeDescription(description) {
   return trimmedDescription.length > 0 ? trimmedDescription : null;
 }
 
+/**
+ * Parses a task ID from a string to a number.
+ *
+ * @param {string} id
+ * @returns {number | null}
+ */
+function parseTaskId(id) {
+  const parsedId = Number(id);
+
+  if (!Number.isInteger(parsedId) || parsedId <= 0) {
+    return null;
+  }
+
+  return parsedId;
+}
+
 export function index(req, res) {
   const { status } = req.query;
 
@@ -59,7 +75,13 @@ export function index(req, res) {
 }
 
 export function show(req, res) {
-  const task = findTaskById({ id: req.params.id, userId: req.user.id });
+  const taskId = parseTaskId(req.params.id);
+
+  if (!taskId) {
+    return res.status(400).json({ error: "Invalid task ID" });
+  }
+
+  const task = findTaskById({ id: taskId, userId: req.user.id });
 
   if (!task) {
     return res.status(404).json({ error: "Task not found" });
@@ -93,9 +115,15 @@ export function store(req, res) {
 }
 
 export function update(req, res) {
+  const taskId = parseTaskId(req.params.id);
+
+  if (!taskId) {
+    return res.status(400).json({ error: "Invalid task ID" });
+  }
+
   const { title, description, status } = req.body;
 
-  const existingTask = findTaskById({ id: req.params.id, userId: req.user.id });
+  const existingTask = findTaskById({ id: taskId, userId: req.user.id });
 
   if (!existingTask) {
     return res.status(404).json({ error: "Task not found" });
@@ -113,7 +141,7 @@ export function update(req, res) {
   }
 
   const task = updateTask({
-    id: req.params.id,
+    id: taskId,
     userId: req.user.id,
     title: title ? title.trim() : existingTask.title,
     description:
@@ -130,8 +158,14 @@ export function update(req, res) {
 }
 
 export function destroy(req, res) {
+  const taskId = parseTaskId(req.params.id);
+
+  if (!taskId) {
+    return res.status(400).json({ error: "Invalid task ID" });
+  }
+
   const deleted = deleteTask({
-    id: Number(req.params.id),
+    id: taskId,
     userId: req.user.id,
   });
 
