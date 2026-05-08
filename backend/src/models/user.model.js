@@ -4,13 +4,13 @@ import db from "../database/db.js";
  * Finds a user by email, including the password hash needed for login.
  *
  * @param {string} email
- * @returns {{ id: number, name: string, email: string, password: string } | undefined}
+ * @returns {{ id: number, name: string, email: string, password_hash: string } | undefined}
  */
 export function findUserByEmail(email) {
   return db
     .prepare(
       `
-      SELECT id, name, email, password
+      SELECT id, name, email, password_hash
       FROM users
       WHERE email = ?
     `,
@@ -30,7 +30,7 @@ export function createUser(name, email, passwordHash) {
   const result = db
     .prepare(
       `
-      INSERT INTO users (name, email, password)
+      INSERT INTO users (name, email, password_hash)
       VALUES (?, ?, ?)
     `,
     )

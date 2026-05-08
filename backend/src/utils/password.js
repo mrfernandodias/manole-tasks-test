@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
  * @returns {Promise<string>}
  */
 export async function hashPassword(password) {
-  return bcrypt.hashSync(password, 10);
+  return bcrypt.hash(password, 10);
 }
 
 /**
@@ -18,5 +18,5 @@ export async function hashPassword(password) {
  * @returns {Promise<boolean>}
  */
 export async function comparePassword(password, hash) {
-  return bcrypt.compareSync(password, hash);
+  return bcrypt.compare(password, hash);
 }
