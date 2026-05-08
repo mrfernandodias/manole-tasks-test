@@ -1,5 +1,14 @@
 import jwt from "jsonwebtoken";
 
+/**
+ * Validates the JWT Bearer token and attaches the authenticated user
+ * payload to req.user.
+ *
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
+ * @returns {void}
+ */
 export function authenticate(req, res, next) {
   const authorizationHeader = req.headers.authorization;
 

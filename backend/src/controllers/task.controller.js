@@ -12,12 +12,26 @@ function isValidStatus(status) {
   return VALID_STATUSES.includes(status);
 }
 
+/**
+ * Normalizes pagination query parameters and limits the maximum page size.
+ *
+ * @param {Record<string, unknown>} query
+ * @returns {{ page: number, limit: number }}
+ */
 function normalizePagination(query) {
   const page = Math.max(Number(query.page) || 1, 1);
   const limit = Math.min(Math.max(Number(query.limit) || 10, 1), 50);
   return { page, limit };
 }
 
+/**
+ * Normalizes optional task descriptions before persistence.
+ *
+ * Empty or non-string descriptions are stored as null.
+ *
+ * @param {unknown} description
+ * @returns {string | null}
+ */
 function normalizeDescription(description) {
   if (typeof description !== "string") return null;
 

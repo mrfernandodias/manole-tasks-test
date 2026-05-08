@@ -1,3 +1,13 @@
+/**
+ * Analyzes an array of values and returns the sum of even integers
+ * and the average of odd integers.
+ *
+ * Invalid values are ignored. Only integers are considered.
+ *
+ * @param {unknown[]} values
+ * @returns {{ somaPares: number, mediaImpares: number }}
+ * @throws {TypeError} When the input is not an array.
+ */
 export function analyzeNumbers(values) {
   if (!Array.isArray(values)) {
     throw new TypeError("Input must be an array.");
