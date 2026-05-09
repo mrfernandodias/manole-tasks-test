@@ -19,6 +19,7 @@ import { DeleteConfirmDialog } from "../components/DeleteConfirmDialog";
 import { TaskCard } from "../components/TaskCard";
 import { TaskCreateForm } from "../components/TaskCreateForm";
 import { TaskFilters } from "../components/TaskFilters";
+import { TaskPagination } from "../components/TaskPagination";
 
 const PAGE_LIMIT = 10;
 
@@ -111,6 +112,18 @@ export function TasksPage() {
 
   function handleRefreshTasks() {
     setReloadKey((currentValue) => currentValue + 1);
+  }
+
+  function handlePreviousPage() {
+    setPage((currentPage) => Math.max(currentPage - 1, 1));
+  }
+
+  function handleNextPage() {
+    if (!meta) {
+      return;
+    }
+
+    setPage((currentPage) => Math.min(currentPage + 1, meta.totalPages));
   }
 
   async function handleCreateTask(payload: CreateTaskPayload) {
@@ -315,33 +328,13 @@ export function TasksPage() {
           </div>
         )}
 
-        {meta && meta.totalPages > 1 && (
-          <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-slate-500">
-              Página {meta.page} de {meta.totalPages} · {meta.total} tarefa(s)
-            </p>
-
-            <div className="flex gap-2">
-              <button
-                type="button"
-                disabled={!canGoToPreviousPage}
-                onClick={() => setPage((currentPage) => currentPage - 1)}
-                className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Anterior
-              </button>
-
-              <button
-                type="button"
-                disabled={!canGoToNextPage}
-                onClick={() => setPage((currentPage) => currentPage + 1)}
-                className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Próxima
-              </button>
-            </div>
-          </div>
-        )}
+        <TaskPagination
+          meta={meta}
+          canGoToPreviousPage={canGoToPreviousPage}
+          canGoToNextPage={canGoToNextPage}
+          onPreviousPage={handlePreviousPage}
+          onNextPage={handleNextPage}
+        />
       </section>
 
       {taskPendingDeletion && (
