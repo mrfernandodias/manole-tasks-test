@@ -43,6 +43,20 @@ async function registerUser() {
   accessToken = response.body.accessToken;
 }
 
+async function createTaskForTest(task) {
+  const response = await request("/tasks", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(task),
+  });
+
+  assert.equal(response.status, 201);
+
+  return response.body.data;
+}
+
 describe("Tasks API", () => {
   before(async () => {
     process.env.DATABASE_PATH = testDatabasePath;
@@ -147,5 +161,83 @@ describe("Tasks API", () => {
 
     assert.equal(response.status, 400);
     assert.equal(response.body.error, "Invalid task ID");
+  });
+
+  test("should search tasks by title", async () => {
+    await createTaskForTest({
+      title: "Review Docker setup",
+      description: "Validate containers before delivery",
+      status: "pendente",
+    });
+
+    await createTaskForTest({
+      title: "Write README",
+      description: "Document how to run the project",
+      status: "em andamento",
+    });
+
+    const response = await request("/tasks?search=Docker", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    assert.equal(response.status, 200);
+    assert.ok(response.body.data.length >= 1);
+
+    const titles = response.body.data.map((task) => task.title);
+
+    assert.ok(titles.includes("Review Docker setup"));
+  });
+
+  test("should search tasks by description", async () => {
+    await createTaskForTest({
+      title: "Prepare final review",
+      description: "Check frontend responsiveness",
+      status: "pendente",
+    });
+
+    const response = await request("/tasks?search=responsiveness", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    assert.equal(response.status, 200);
+    assert.ok(response.body.data.length >= 1);
+
+    const descriptions = response.body.data.map((task) => task.description);
+
+    assert.ok(descriptions.includes("Check frontend responsiveness"));
+  });
+
+  test("should combine status filter and search", async () => {
+    await createTaskForTest({
+      title: "Search filter pending task",
+      description: "This task should be returned",
+      status: "pendente",
+    });
+
+    await createTaskForTest({
+      title: "Search filter completed task",
+      description: "This task should not be returned for pending filter",
+      status: "concluída",
+    });
+
+    const response = await request(
+      "/tasks?status=pendente&search=Search%20filter",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    assert.equal(response.status, 200);
+    assert.ok(response.body.data.length >= 1);
+
+    const statuses = response.body.data.map((task) => task.status);
+
+    assert.ok(statuses.every((status) => status === "pendente"));
   });
 });
