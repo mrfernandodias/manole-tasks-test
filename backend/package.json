@@ -10,6 +10,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "generate:secret": "node -e \"console.log(require('node:crypto').randomBytes(64).toString('hex'))\"",
+    "seed": "node src/database/seed.js",
     "test": "node --test"
   },
   "keywords": [],
