@@ -20,6 +20,7 @@ export type TaskListParams = {
   page?: number;
   limit?: number;
   status?: TaskStatus | "all";
+  search?: string;
 };
 
 export type TaskMeta = {

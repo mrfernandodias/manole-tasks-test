@@ -36,6 +36,12 @@ function buildTaskQueryParams(params: TaskListParams = {}) {
     searchParams.set("status", params.status);
   }
 
+  const search = params.search?.trim();
+
+  if (search) {
+    searchParams.set("search", search);
+  }
+
   const queryString = searchParams.toString();
 
   return queryString ? `?${queryString}` : "";

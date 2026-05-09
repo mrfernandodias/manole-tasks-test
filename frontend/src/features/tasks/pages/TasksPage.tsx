@@ -29,6 +29,7 @@ export function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [meta, setMeta] = useState<TaskMeta | null>(null);
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -75,6 +76,7 @@ export function TasksPage() {
           page,
           limit: PAGE_LIMIT,
           status: statusFilter,
+          search: searchTerm,
         });
 
         if (!shouldIgnoreResponse) {
@@ -103,10 +105,15 @@ export function TasksPage() {
     return () => {
       shouldIgnoreResponse = true;
     };
-  }, [accessToken, page, statusFilter, reloadKey, showToast]);
+  }, [accessToken, page, statusFilter, searchTerm, reloadKey, showToast]);
 
   function handleChangeStatusFilter(status: TaskStatus | "all") {
     setStatusFilter(status);
+    setPage(1);
+  }
+
+  function handleSearch(search: string) {
+    setSearchTerm(search.trim());
     setPage(1);
   }
 
@@ -139,6 +146,7 @@ export function TasksPage() {
 
       setIsCreateFormOpen(false);
       setStatusFilter("all");
+      setSearchTerm("");
       setPage(1);
       setReloadKey((currentValue) => currentValue + 1);
       showToast("success", "Tarefa criada com sucesso.");
@@ -288,8 +296,10 @@ export function TasksPage() {
 
         <TaskFilters
           statusFilter={statusFilter}
+          searchTerm={searchTerm}
           meta={meta}
           onChangeStatusFilter={handleChangeStatusFilter}
+          onSearch={handleSearch}
           onRefresh={handleRefreshTasks}
         />
 
@@ -310,7 +320,7 @@ export function TasksPage() {
             </p>
 
             <p className="mt-2 text-sm text-slate-500">
-              Crie sua primeira tarefa ou altere o filtro selecionado.
+              Crie sua primeira tarefa ou ajuste os filtros selecionados.
             </p>
           </div>
         ) : (
