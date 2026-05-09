@@ -17,12 +17,12 @@ export function createTask({ userId, title, description, status }) {
 }
 
 /**
- * Lists tasks owned by a user with optional status filtering and pagination.
+ * Lists tasks owned by a user with optional status/search filtering and pagination.
  *
- * @param {{ userId: number, status?: string, page: number, limit: number }} filters
+ * @param {{ userId: number, status?: string, search?: string | null, page: number, limit: number }} filters
  * @returns {{ data: Array<{ id: number, title: string, description: string | null, status: string, created_at: string }>, meta: { page: number, limit: number, total: number, totalPages: number } }}
  */
-export function listTasks({ userId, status, page, limit }) {
+export function listTasks({ userId, status, search, page, limit }) {
   const offset = (page - 1) * limit;
 
   const filters = ["user_id = ?"];
@@ -31,6 +31,11 @@ export function listTasks({ userId, status, page, limit }) {
   if (status) {
     filters.push("status = ?");
     params.push(status);
+  }
+
+  if (search) {
+    filters.push("(title LIKE ? OR description LIKE ?)");
+    params.push(`%${search}%`, `%${search}%`);
   }
 
   const whereClause = filters.join(" AND ");

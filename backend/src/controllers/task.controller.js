@@ -56,11 +56,16 @@ function parseTaskId(id) {
 }
 
 export function index(req, res) {
-  const { status } = req.query;
+  const { status, search } = req.query;
 
   if (status && !isValidStatus(status)) {
     return res.status(400).json({ error: "Invalid status filter" });
   }
+
+  const normalizeSearch =
+    typeof search === "string" && search.trim().length > 0
+      ? search.trim()
+      : null;
 
   const { page, limit } = normalizePagination(req.query);
 
@@ -69,6 +74,7 @@ export function index(req, res) {
     status,
     page,
     limit,
+    search: normalizeSearch,
   });
 
   return res.status(200).json(result);
