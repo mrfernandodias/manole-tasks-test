@@ -156,6 +156,8 @@ export function TasksPage() {
 
       setError(message);
       showToast("error", message);
+
+      throw err;
     } finally {
       setIsCreatingTask(false);
     }
