@@ -17,6 +17,8 @@ import {
   register,
 } from "../services/authService";
 
+const AUTH_SESSION_KEY = "manole_tasks_has_session";
+
 type AuthContextValue = {
   user: User | null;
   accessToken: string | null;
@@ -55,6 +57,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       setUser(response.user);
       setAccessToken(response.accessToken);
+      localStorage.setItem(AUTH_SESSION_KEY, "true");
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Não foi possível fazer login.";
@@ -72,6 +75,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       setUser(response.user);
       setAccessToken(response.accessToken);
+      localStorage.setItem(AUTH_SESSION_KEY, "true");
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Não foi possível criar a conta.";
@@ -87,6 +91,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } finally {
       setUser(null);
       setAccessToken(null);
+      localStorage.removeItem(AUTH_SESSION_KEY);
       setError(null);
     }
   }, []);
@@ -99,6 +104,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     hasTriedToRestoreSession.current = true;
 
     async function restoreSession() {
+      const hasPreviousSession =
+        localStorage.getItem(AUTH_SESSION_KEY) === "true";
+
+      if (!hasPreviousSession) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         const response = await refreshAccessToken();
 
@@ -107,6 +120,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } catch {
         setUser(null);
         setAccessToken(null);
+        localStorage.removeItem(AUTH_SESSION_KEY);
       } finally {
         setIsLoading(false);
       }
