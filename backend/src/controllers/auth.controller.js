@@ -25,13 +25,23 @@ function publicUser(user) {
   };
 }
 
+function getCookieSameSite() {
+  const sameSite = process.env.COOKIE_SAME_SITE || "lax";
+
+  if (!["lax", "strict", "none"].includes(sameSite)) {
+    return "lax";
+  }
+
+  return sameSite;
+}
+
 function setRefreshTokenCookie(res, token) {
   const expireInDays = Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS) || 7;
 
   res.cookie("refreshToken", token, {
     httpOnly: true,
     secure: process.env.COOKIE_SECURE === "true",
-    sameSite: "lax",
+    sameSite: getCookieSameSite(),
     maxAge: expireInDays * 24 * 60 * 60 * 1000,
     path: "/auth",
   });
@@ -41,7 +51,7 @@ function clearRefreshTokenCookie(res) {
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: process.env.COOKIE_SECURE === "true",
-    sameSite: "lax",
+    sameSite: getCookieSameSite(),
     path: "/auth",
   });
 }
