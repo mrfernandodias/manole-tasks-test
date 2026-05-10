@@ -31,7 +31,10 @@ function getStatusClassName(status: TaskStatus) {
 }
 
 function formatDate(date: string) {
-  const normalizedDate = date.replace(" ", "T");
+  const normalizedDate = date.includes("T")
+    ? date
+    : `${date.replace(" ", "T")}Z`;
+
   const parsedDate = new Date(normalizedDate);
 
   if (Number.isNaN(parsedDate.getTime())) {
