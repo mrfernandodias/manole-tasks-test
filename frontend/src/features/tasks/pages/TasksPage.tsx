@@ -156,6 +156,8 @@ export function TasksPage() {
 
       setError(message);
       showToast("error", message);
+
+      throw err;
     } finally {
       setIsCreatingTask(false);
     }
@@ -172,11 +174,20 @@ export function TasksPage() {
     try {
       await updateTask(accessToken, taskId, { status });
 
-      setTasks((currentTasks) =>
-        currentTasks.map((task) =>
+      setTasks((currentTasks) => {
+        const shouldRemoveFromCurrentFilter =
+          statusFilter !== "all" && status !== statusFilter;
+
+        if (shouldRemoveFromCurrentFilter) {
+          return currentTasks.filter((task) => task.id !== taskId);
+        }
+
+        return currentTasks.map((task) =>
           task.id === taskId ? { ...task, status } : task,
-        ),
-      );
+        );
+      });
+
+      setReloadKey((currentValue) => currentValue + 1);
 
       showToast("success", "Status atualizado com sucesso.");
     } catch (err) {
