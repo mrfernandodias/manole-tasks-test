@@ -85,18 +85,18 @@ export async function register(req, res) {
   }
 
   if (!validateEmail(normalizedEmail)) {
-    return res.status(400).json({ error: "Invalid email format" });
+    return res.status(400).json({ error: "E-mail inválido" });
   }
 
   if (password.length < 6) {
     return res
       .status(400)
-      .json({ error: "Password must be at least 6 characters long" });
+      .json({ error: "A senha deve ter pelo menos 6 caracteres" });
   }
 
   const existingUser = findUserByEmail(normalizedEmail);
   if (existingUser) {
-    return res.status(409).json({ error: "Email is already registered" });
+    return res.status(409).json({ error: "E-mail já está em uso" });
   }
 
   const passwordHash = await hashPassword(password);
@@ -121,12 +121,12 @@ export async function login(req, res) {
 
   const user = findUserByEmail(normalizedEmail);
   if (!user) {
-    return res.status(401).json({ error: "Invalid email or password" });
+    return res.status(401).json({ error: "E-mail ou senha inválidos" });
   }
 
   const isPasswordValid = await comparePassword(password, user.password_hash);
   if (!isPasswordValid) {
-    return res.status(401).json({ error: "Invalid email or password" });
+    return res.status(401).json({ error: "E-mail ou senha inválidos" });
   }
 
   const accessToken = issueAuthSession(user, res);
